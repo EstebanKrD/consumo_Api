@@ -1,0 +1,128 @@
+@if (isLoading()) {
+  <p class="loading">Cargando ticket...</p>
+} @else if (errorMessage()) {
+  <div class="page"><div class="alert-error">{{ errorMessage() }}</div></div>
+} @else if (ticket()) {
+  <div class="page">
+    <a routerLink="/tickets" class="back-link">&larr; Volver a tickets</a>
+
+    <div class="ticket-header">
+      <h1>{{ ticket()!.title }}</h1>
+      <div class="badges">
+        <span class="badge" [class]="'status-' + ticket()!.status">{{ statusLabels[ticket()!.status] }}</span>
+        <span class="badge" [class]="'priority-' + ticket()!.priority">{{ priorityLabels[ticket()!.priority] }}</span>
+      </div>
+    </div>
+
+    <p class="description">{{ ticket()!.description }}</p>
+
+    <div class="meta-info">
+      <span>Creado: {{ ticket()!.createdAt | date: 'medium' }}</span>
+      <span>Actualizado: {{ ticket()!.updatedAt | date: 'medium' }}</span>
+      <span>Asignado a: {{ ticket()!.assignedTo ?? 'Sin asignar' }}</span>
+    </div>
+
+    @if (canAssign()) {
+      <section class="panel">
+        <h2>Asignar agente</h2>
+        <form [formGroup]="assignForm" (ngSubmit)="submitAssign()" class="inline-form">
+          <select formControlName="agentId">
+            <option value="" disabled>Selecciona un agente</option>
+            @for (agent of agents(); track agent.id) {
+              <option [value]="agent.id">{{ agent.name }}</option>
+            }
+          </select>
+          <button type="submit" [disabled]="isAssigning()">
+            {{ isAssigning() ? 'Asignando...' : 'Asignar' }}
+          </button>
+        </form>
+        @if (assignError()) {
+          <div class="alert-error">{{ assignError() }}</div>
+        }
+      </section>
+    }
+
+    @if (canUpdate()) {
+      <section class="panel">
+        <h2>Actualizar ticket</h2>
+        <form [formGroup]="updateForm" (ngSubmit)="submitUpdate()">
+          @if (canEditFull()) {
+            <label>
+              Título
+              <input type="text" formControlName="title" />
+            </label>
+            <label>
+              Descripción
+              <textarea formControlName="description" rows="3"></textarea>
+            </label>
+          }
+
+          <label>
+            Prioridad
+            <select formControlName="priority">
+              @for (priority of priorityOptions; track priority) {
+                <option [value]="priority">{{ priorityLabels[priority] }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            Estado
+            <select formControlName="status">
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ statusLabels[status] }}</option>
+              }
+            </select>
+          </label>
+
+          <button type="submit" [disabled]="isSubmittingUpdate()">
+            {{ isSubmittingUpdate() ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </form>
+        @if (updateError()) {
+          <div class="alert-error">{{ updateError() }}</div>
+        }
+        @if (updateSuccess()) {
+          <div class="alert-success">Ticket actualizado correctamente.</div>
+        }
+      </section>
+    }
+
+    <section class="panel">
+      <h2>Comentarios</h2>
+
+      @if (comments().length === 0) {
+        <p class="empty">Aún no hay comentarios.</p>
+      } @else {
+        <ul class="comment-list">
+          @for (comment of comments(); track comment.id) {
+            <li class="comment">
+              <div class="comment-header">
+                <strong>{{ comment.author?.name ?? 'Usuario eliminado' }}</strong>
+                <span class="comment-date">{{ comment.createdAt | date: 'short' }}</span>
+              </div>
+              <p>{{ comment.body }}</p>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (isClosed()) {
+        <p class="empty">Este ticket está cerrado, no se pueden agregar comentarios.</p>
+      } @else {
+        <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+          <textarea formControlName="body" rows="2" placeholder="Escribe un comentario..."></textarea>
+          @if (commentForm.controls.body.invalid && commentForm.controls.body.touched) {
+            <span class="field-error">El comentario no puede estar vacío.</span>
+          }
+          @if (commentError()) {
+            <div class="alert-error">{{ commentError() }}</div>
+          }
+          <button type="submit" [disabled]="isSubmittingComment()">
+            {{ isSubmittingComment() ? 'Enviando...' : 'Comentar' }}
+          </button>
+        </form>
+      }
+    </section>
+  </div>
+}

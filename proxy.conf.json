@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://sla-api.areasoftccyt.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

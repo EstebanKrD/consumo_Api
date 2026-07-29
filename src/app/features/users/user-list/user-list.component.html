@@ -1,0 +1,62 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Gestión de usuarios</h1>
+  </div>
+
+  <form class="filters" [formGroup]="filterForm">
+    <label>
+      Rol
+      <select formControlName="role">
+        <option value="">Todos</option>
+        @for (role of roleOptions; track role) {
+          <option [value]="role">{{ roleLabels[role] }}</option>
+        }
+      </select>
+    </label>
+  </form>
+
+  @if (roleUpdateError()) {
+    <div class="alert-error">{{ roleUpdateError() }}</div>
+  }
+
+  @if (isLoading()) {
+    <p>Cargando usuarios...</p>
+  } @else if (errorMessage()) {
+    <div class="alert-error">{{ errorMessage() }}</div>
+  } @else if (users().length === 0) {
+    <p class="empty">No hay usuarios para mostrar.</p>
+  } @else {
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Creado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <select
+                [disabled]="user.id === currentUser()?.id || updatingUserId() === user.id"
+                (change)="onRoleChange(user, $any($event.target).value)"
+              >
+                @for (role of roleOptions; track role) {
+                  <option [value]="role" [selected]="role === user.role">{{ roleLabels[role] }}</option>
+                }
+              </select>
+              @if (user.id === currentUser()?.id) {
+                <span class="hint">(tu usuario)</span>
+              }
+            </td>
+            <td>{{ user.createdAt | date: 'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

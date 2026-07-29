@@ -1,0 +1,71 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Tickets</h1>
+    @if (canCreateTicket) {
+      <a routerLink="/tickets/new" class="btn-primary">+ Nuevo ticket</a>
+    }
+  </div>
+
+  <form class="filters" [formGroup]="filterForm">
+    <label>
+      Estado
+      <select formControlName="status">
+        <option value="">Todos</option>
+        @for (status of statusOptions; track status) {
+          <option [value]="status">{{ statusLabels[status] }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Prioridad
+      <select formControlName="priority">
+        <option value="">Todas</option>
+        @for (priority of priorityOptions; track priority) {
+          <option [value]="priority">{{ priorityLabels[priority] }}</option>
+        }
+      </select>
+    </label>
+  </form>
+
+  @if (isLoading()) {
+    <p>Cargando tickets...</p>
+  } @else if (errorMessage()) {
+    <div class="alert-error">{{ errorMessage() }}</div>
+  } @else if (tickets().length === 0) {
+    <p class="empty">No hay tickets para mostrar.</p>
+  } @else {
+    <table class="ticket-table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Estado</th>
+          <th>Prioridad</th>
+          <th>Creado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ticket of tickets(); track ticket.id) {
+          <tr [routerLink]="['/tickets', ticket.id]" class="ticket-row">
+            <td>{{ ticket.title }}</td>
+            <td><span class="badge" [class]="'status-' + ticket.status">{{ statusLabels[ticket.status] }}</span></td>
+            <td><span class="badge" [class]="'priority-' + ticket.priority">{{ priorityLabels[ticket.priority] }}</span></td>
+            <td>{{ ticket.createdAt | date: 'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    @if (meta(); as m) {
+      <div class="pagination">
+        <button type="button" (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() <= 1">
+          Anterior
+        </button>
+        <span>Página {{ m.page }} de {{ m.totalPages || 1 }}</span>
+        <button type="button" (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() >= m.totalPages">
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</div>

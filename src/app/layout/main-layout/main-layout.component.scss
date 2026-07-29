@@ -1,0 +1,78 @@
+.app-shell {
+  min-height: 100vh;
+  background: #f4f5f7;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1.5rem;
+}
+
+.brand {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1.05rem;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+
+  a {
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.3rem 0;
+    border-bottom: 2px solid transparent;
+
+    &.active {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+    }
+
+    &:hover {
+      color: #2563eb;
+    }
+  }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.user-role {
+  color: #9ca3af;
+  text-transform: capitalize;
+}
+
+.logout-btn {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+
+  &:hover {
+    background: #f3f4f6;
+  }
+}
+
+.app-content {
+  padding: 1rem 0;
+}
